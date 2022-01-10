@@ -1,0 +1,1 @@
+bool isNight() => DateTime.now().hour > 18 || DateTime.now().hour < 5;
