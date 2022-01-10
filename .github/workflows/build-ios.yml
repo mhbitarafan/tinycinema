@@ -1,4 +1,4 @@
-- name: Flutter action
+- name: flutter build ios
   on: [push]
   jobs:
     build:
