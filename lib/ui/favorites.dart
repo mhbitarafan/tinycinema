@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tinycinema/logic/favorites.dart';
-import 'package:tinycinema/logic/websites/models.dart';
 import 'package:tinycinema/logic/websites/websites.dart';
 import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart' as d;
 import 'package:tinycinema/ui/pages/single_page.dart';

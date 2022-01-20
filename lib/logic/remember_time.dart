@@ -10,7 +10,6 @@ class RememberTime {
   }
   Future<File> getTimingFile() async {
     var appTempDir = await getTemporaryDirectory();
-    print(appTempDir);
     return File(appTempDir.path + "/remember_time.json").create();
   }
 
@@ -18,10 +17,10 @@ class RememberTime {
   File? rememberTimeFile;
 
   void addOrUpdateVideo(String videoUrl, Duration time) async {
-    if (didRemember(videoUrl)) {
-      final index =
-          rememberTimeList.indexWhere((element) => element["slug"] == videoUrl);
-      rememberTimeList[index] = {"slug": videoUrl, "time": time};
+    final index =
+        rememberTimeList.indexWhere((element) => element["slug"] == videoUrl);
+    if (index != -1) {
+      rememberTimeList[index]["time"] = time;
       rememberTimeFile?.writeAsString(json.encode(rememberTimeList));
     } else {
       rememberTimeList.add({"slug": videoUrl, "time": time});
@@ -33,17 +32,7 @@ class RememberTime {
     rememberTimeFile = await getTimingFile();
     if (rememberTimeFile != null) {
       rememberTimeList = json.decode(rememberTimeFile!.readAsStringSync());
-      print(rememberTimeList);
     }
-  }
-
-  bool didRemember(String videoUrl) {
-    for (var a in rememberTimeList) {
-      if (a["slug"] == videoUrl) {
-        return true;
-      }
-    }
-    return false;
   }
 
   Duration getVideoRememberedTime(String videoUrl) {
@@ -52,6 +41,6 @@ class RememberTime {
         return a["time"] as Duration;
       }
     }
-    return Duration();
+    return Duration(seconds: 0);
   }
 }

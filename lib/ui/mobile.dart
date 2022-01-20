@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tinycinema/config.dart';
-import 'package:tinycinema/ui/navigator.dart';
 import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart';
 import 'package:tinycinema/ui/styles/theme_manager.dart';
 
@@ -40,6 +39,7 @@ class MobileLayoutState extends State<MobileLayout> {
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: true,
         unselectedItemColor: Theme.of(context).textTheme.bodyText1!.color,
+        selectedItemColor: Theme.of(context).primaryColor,
         items: menuItems,
         currentIndex: _bottomNavCurrentIndex,
         onTap: _onBottomNavItemTapped,

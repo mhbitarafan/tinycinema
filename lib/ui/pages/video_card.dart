@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinycinema/config.dart';
+import 'package:tinycinema/controller/video_info_state.dart';
 import 'package:tinycinema/ui/helpers/color_utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -28,7 +29,6 @@ class VideoCard extends StatefulWidget {
 
 class VideoCardState extends State<VideoCard> {
   late Color cardColor;
-  bool _isFlipped = false;
   double cardScale = 1;
   @override
   void didChangeDependencies() {
@@ -39,19 +39,22 @@ class VideoCardState extends State<VideoCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      focusColor: Colors.transparent,
       onTap: widget.onTap,
       onFocusChange: (hasFocus) {
         setState(() {
           if (hasFocus) {
-            cardColor = darken(cardColor);
-            cardScale = 1.04;
-            _isFlipped = true;
+            videoSummary.value = widget.summary ?? "";
+            videoMeta.value = widget.meta?.join("\n") ?? "";
+            setState(() {
+              cardColor = darken(cardColor, .1);
+            });
           } else {
-            cardColor = Theme.of(context).cardColor;
-            if (cardScale > 1) {
-              cardScale = 1;
-              _isFlipped = false;
-            }
+            videoSummary.value = "";
+            videoMeta.value = "";
+            setState(() {
+              cardColor = Theme.of(context).cardColor;
+            });
           }
         });
       },
@@ -81,33 +84,6 @@ class VideoCardState extends State<VideoCard> {
               ],
             ),
           ),
-          if (widget.meta != null || widget.summary != null)
-            Visibility(
-              visible: _isFlipped,
-              child: Container(
-                color: Theme.of(context).cardColor.withOpacity(.93),
-                width: double.infinity,
-                height: double.infinity,
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.summary ?? "",
-                        overflow: TextOverflow.fade,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Text(
-                      widget.meta?.join("\n") ?? "",
-                      overflow: TextOverflow.fade,
-                    )
-                  ],
-                ),
-              ),
-            ),
         ],
       ),
     );

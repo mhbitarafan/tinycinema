@@ -4,7 +4,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:tinycinema/config.dart';
 import 'package:tinycinema/logic/favorites.dart';
-import 'package:tinycinema/logic/remember_time.dart';
 import 'package:tinycinema/ui/layout_builder.dart';
 import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart';
 import 'package:tinycinema/ui/styles/theme_manager.dart';
@@ -24,13 +23,8 @@ class MyApp extends StatelessWidget {
         builder: (context, myThemeManager, child) => MaterialApp(
           debugShowCheckedModeBanner: false,
           title: appTitle,
-          home: WillPopScope(
-            onWillPop: () async {
-              return false;
-            },
-            child: SafeArea(
-              child: MyLayoutBuilder(),
-            ),
+          home: SafeArea(
+            child: MyLayoutBuilder(),
           ),
           theme: myThemeManager.currentTheme.themeData,
           localizationsDelegates: [

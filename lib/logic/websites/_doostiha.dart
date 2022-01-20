@@ -229,7 +229,12 @@ class Doostiha extends Website {
   }
 
   Future<List<Post>> search(String q) async {
-    final document = await _downloadAndParseDocument("/?s=$q");
-    return parseDocument(document);
+    try {
+      final document = await _downloadAndParseDocument("/?s=$q");
+      return parseDocument(document);
+    } catch (e) {
+      List<Post> empty = [];
+      return empty;
+    }
   }
 }

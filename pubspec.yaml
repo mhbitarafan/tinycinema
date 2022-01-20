@@ -36,6 +36,7 @@ dependencies:
   test: ^1.17.12
   dio_brotli_transformer: ^1.0.0
   path_provider: ^2.0.8
+  wakelock: ^0.5.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

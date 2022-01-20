@@ -7,7 +7,6 @@ import 'package:tinycinema/config.dart';
 import 'package:tinycinema/logic/favorites.dart';
 import 'package:tinycinema/logic/websites/models.dart';
 import 'package:tinycinema/logic/websites/websites.dart';
-import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart';
 import 'package:tinycinema/ui/pages/video_player.dart';
 
 class SinglePage extends StatefulWidget {
@@ -107,6 +106,7 @@ class SinglePageState extends State<SinglePage> with TickerProviderStateMixin {
                                             child: Text("حذف از لیست"),
                                           )
                                         : ElevatedButton(
+                                            autofocus: true,
                                             onPressed: () {
                                               myFavorite.addFavorite(
                                                   post.toJson(),

@@ -4,7 +4,9 @@ import 'package:tinycinema/ui/desktop.dart';
 import 'package:tinycinema/ui/tv.dart';
 import 'package:tinycinema/ui/mobile.dart';
 
+// ignore: must_be_immutable
 class MyLayoutBuilder extends StatelessWidget {
+  // pls dont make it final or you get empty screen!
   late Widget layout;
   @override
   Widget build(BuildContext context) {
