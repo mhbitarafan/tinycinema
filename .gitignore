@@ -90,4 +90,3 @@ app.*.map.json
 web/
 windows/
 android/
-.lib_old/

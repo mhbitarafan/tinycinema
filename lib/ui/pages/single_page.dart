@@ -174,18 +174,19 @@ List<Widget> createTabs(Map<String, dynamic> links) {
 List<Widget> createTabsContent(
     Map<String, dynamic> links, BuildContext context) {
   List<Widget> _tabsContent = [];
-  links.forEach((_, box) {
+
+  links.forEach((_, tab) {
     final linkColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [],
     );
-    box.forEach((groupKey, groupValue) {
+    tab.forEach((groupKey, row) {
       final linkRow = Wrap(
         runSpacing: 10,
         spacing: 10,
         children: [Text(groupKey)],
       );
-      groupValue.forEach((linkTitle, link) {
+      row.forEach((linkTitle, link) {
         linkRow.children.add(Tooltip(
           message: link,
           child: ElevatedButton(
@@ -201,6 +202,9 @@ List<Widget> createTabsContent(
                   },
                 ));
               }
+            },
+            onLongPress: () {
+              Clipboard.setData(ClipboardData(text: link));
             },
           ),
         ));

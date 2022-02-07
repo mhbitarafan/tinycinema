@@ -16,7 +16,8 @@ abstract class Website implements PostParser, SinglePageParser, LinksParser {
   final String key;
   late final Map<String, String> categories;
   final _httpClient = Dio();
-  Website(this._baseUrl, this._postSelector, this.key, [this._pagePath = "/page/"]) {
+  Website(this._baseUrl, this._postSelector, this.key,
+      [this._pagePath = "/page/"]) {
     _httpClient.transformer = DioBrotliTransformer();
     _httpClient.options.baseUrl = _baseUrl;
   }

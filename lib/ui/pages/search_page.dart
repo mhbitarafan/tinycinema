@@ -19,6 +19,13 @@ class SearchPageState extends State<SearchPage> {
   List<Post> _doostihaResults = [];
   List<Post> _uptvResults = [];
   List<bool> _loading = [false, false];
+  FocusNode searchInputNode = FocusNode();
+  @override
+  void initState() {
+    searchInputNode.requestFocus();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -37,12 +44,13 @@ class SearchPageState extends State<SearchPage> {
               return KeyEventResult.ignored;
             },
             child: TextField(
-              autofocus: true,
+              focusNode: searchInputNode,
               decoration: InputDecoration(
-                  fillColor: Theme.of(context).cardColor,
-                  filled: true,
-                  border: OutlineInputBorder(),
-                  labelText: 'جستجو ...'),
+                fillColor: Theme.of(context).cardColor,
+                filled: true,
+                border: OutlineInputBorder(),
+                labelText: 'جستجو ...',
+              ),
               onSubmitted: (String q) async {
                 setState(() {
                   _loading[0] = true;

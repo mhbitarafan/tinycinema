@@ -32,3 +32,17 @@ class Link {
   final String url;
   Link(this.name, this.url);
 }
+
+class LinksRow {
+  final String rowTitle;
+  final List<Link> links;
+  LinksRow(this.rowTitle, this.links);
+}
+
+typedef LinksCol = List<LinksRow>;
+
+class LinksTab {
+  final String tabTitle;
+  final List<LinksCol> linksCol;
+  LinksTab(this.tabTitle, this.linksCol);
+}

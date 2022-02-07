@@ -8,6 +8,7 @@ const pageKey = "uptv_movies";
 const categories = {
   "فیلم": "/category/movie",
   "سریال": "/category/سریال-خارجی",
+  "انیمیشن": "/category/animation",
   "برترین فیلم ها":
       "/category/250-%d9%81%db%8c%d9%84%d9%85-%d8%a8%d8%b1%d8%aa%d8%b1-imdb",
 };

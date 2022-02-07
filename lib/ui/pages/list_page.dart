@@ -58,7 +58,7 @@ class ListPageState extends State<ListPageChildren> {
   late final Website website;
   late int catFocusIndex;
   List<Widget> categoryButtons = [];
-  ScrollController _scrollCtl = ScrollController();
+  late ScrollController _scrollCtl;
   ScrollController _categoryController = ScrollController();
 
   void getNext() async {
@@ -67,6 +67,7 @@ class ListPageState extends State<ListPageChildren> {
 
   @override
   void initState() {
+    _scrollCtl = ScrollController();
     categories = widget.categories;
     website = widget.website;
     catFocusIndex = categories.length;
@@ -134,7 +135,7 @@ class ListPageState extends State<ListPageChildren> {
                 )
               : Expanded(
                   child: GridView.builder(
-                    key: PageStorageKey(widget.pageKey),
+                    // key: PageStorageKey(widget.pageKey),
                     controller: _scrollCtl,
                     itemCount: websiteCtl.postList.length,
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

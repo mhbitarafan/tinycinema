@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 
 // const databaseUrl =
@@ -19,6 +20,7 @@ class MyFavorite {
     loadFavoriteList();
   }
   Future<File> getfavoriteFile() async {
+    WidgetsFlutterBinding.ensureInitialized();
     var appDocDir = await getApplicationDocumentsDirectory();
     return File(appDocDir.path + "/favorites.json").create();
   }
@@ -28,7 +30,7 @@ class MyFavorite {
 
   void addFavorite(Map<String, dynamic> post, String websiteKey) async {
     favoriteList[websiteKey]!.add(post);
-    favoriteFile?.writeAsString(json.encode(favoriteList));
+    favoriteFile?.writeAsStringSync(json.encode(favoriteList));
   }
 
   void removeFavorite(Map<String, dynamic> post, String website) async {
@@ -39,7 +41,7 @@ class MyFavorite {
 
   Future<void> loadFavoriteList() async {
     favoriteFile = await getfavoriteFile();
-    if (favoriteFile != null) {
+    if (favoriteFile != null && favoriteFile!.readAsStringSync().isNotEmpty) {
       favoriteList = json.decode(favoriteFile!.readAsStringSync());
     }
   }

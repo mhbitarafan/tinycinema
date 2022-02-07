@@ -29,7 +29,7 @@ abstract class MyTheme {
       ),
       primaryColor: Colors.deepPurple[400],
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple)
-          .copyWith(secondary: Colors.amber, brightness: brightness, primary: Colors.deepPurple),
+          .copyWith(secondary: Colors.amber[600], brightness: brightness, primary: Colors.deepPurple),
     );
   }
 }

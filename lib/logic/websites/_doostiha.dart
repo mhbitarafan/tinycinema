@@ -216,7 +216,7 @@ class Doostiha extends Website {
         linkTitle = linkTitle.replaceFirst(rowTitle, "").trim();
       }
       final groupTitle =
-          filename.contains("Farsi.Dubbed") ? "دوبله فارسی" : "زیرنویس فارسی";
+          filename.contains(".Dubbed") ? "دوبله فارسی" : "زیرنویس فارسی";
       if (links[groupTitle] == null) {
         links[groupTitle] = {};
       }
