@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tinycinema/logic/websites/models.dart';
 import 'package:tinycinema/logic/websites/websites.dart';
-import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart' as d;
-import 'package:tinycinema/ui/pages/uptv/uptv_list.dart' as u;
+import 'package:tinycinema/ui/pages/websites/doostiha_list.dart' as d;
+import 'package:tinycinema/ui/pages/websites/uptv_list.dart' as u;
 import 'package:tinycinema/ui/pages/single_page.dart';
 import 'package:tinycinema/ui/pages/video_card.dart';
 

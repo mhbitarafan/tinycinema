@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tinycinema/ui/favorites.dart';
-import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart';
+import 'package:tinycinema/ui/pages/websites/digimovie_list.dart';
+import 'package:tinycinema/ui/pages/websites/doostiha_list.dart';
 import 'package:tinycinema/ui/pages/search_page.dart';
-import 'package:tinycinema/ui/pages/uptv/uptv_list.dart';
+import 'package:tinycinema/ui/pages/websites/uptv_list.dart';
 
 final appTitle = "تاینی سینما";
-final potPlayerPath = "C:/Program Files/DAUM/PotPlayer/PotPlayerMini64.exe";
+final mpvPlayerPath = r"E:\software\Media\video\mpv\mpv.exe";
 
 // animation
 final animationSpeed = Duration(milliseconds: 500);
@@ -27,6 +28,11 @@ final List<Map<String, dynamic>> menu = [
   {
     "title": "آپ تیوی",
     "page": UptvPage(),
+    "icon": Icons.movie,
+  },
+  {
+    "title": "دیجی مووی",
+    "page": DigimoviePage(),
     "icon": Icons.movie,
   },
   {

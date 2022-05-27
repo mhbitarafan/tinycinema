@@ -114,9 +114,7 @@ class Uptv extends Website {
         document.querySelectorAll('.post-content-download-box > div');
     Map<String, dynamic> links = {};
     for (var linkBoxEl in linkBoxesEl) {
-      var groupTitle =
-          linkBoxEl.querySelector(".badge")?.text.trim() ??
-              "";
+      var groupTitle = linkBoxEl.querySelector(".badge")?.text.trim() ?? "";
       if (links[groupTitle] == null) {
         links[groupTitle] = {};
       }
@@ -149,7 +147,7 @@ class Uptv extends Website {
   }
 
   @override
-  List<String> _findMetadataOpt(Element postEl) {
+  List<String> _findMetadataInCard(Element postEl) {
     late final genre, releaseDate, country, imdbRating;
     genre = postEl
             .querySelector(
@@ -172,7 +170,7 @@ class Uptv extends Website {
   }
 
   @override
-  String _findSummaryOpt(Element postEl) {
+  String _findSummaryInCard(Element postEl) {
     final summary = postEl
             .querySelector(
                 "div.alert.d-lg-block.d-md-none.d-none.mb-20.alert-dark")

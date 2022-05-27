@@ -4,8 +4,8 @@ abstract class PostParser {
   String _findTitle(Element postEl);
   String _findImage(Element postEl);
   String? _findSlug(Element postEl);
-  List<String> _findMetadataOpt(Element postEl);
-  String _findSummaryOpt(Element postEl);
+  List<String> _findMetadataInCard(Element postEl);
+  String _findSummaryInCard(Element postEl);
 }
 
 abstract class SinglePageParser {

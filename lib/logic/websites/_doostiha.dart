@@ -41,15 +41,10 @@ String searchMetadata(Document el, String metaTitle,
 }
 
 class Doostiha extends Website {
-  Doostiha() : super("https://doostihaa.com", "article.postsd", "doostiha");
+  Doostiha() : super("https://www.doostihaa.com", "article.postsd", "doostiha");
   @override
   String _findTitle(Element post) {
-    return post
-            .querySelector('h2 > a')
-            ?.innerHtml
-            .replaceFirst('دانلود', '')
-            .trim() ??
-        "";
+    return cleanTitle(post.querySelector('h2 > a')?.innerHtml ?? "");
   }
 
   @override
@@ -71,11 +66,13 @@ class Doostiha extends Website {
     if (attributes3.contains("خلاصه داستان")) {
       attributes3 = '';
     }
-    for (var p in paragraphs!) {
-      if (p.querySelector('span') != null &&
-          p.querySelector('span')!.text.contains("خلاصه داستان")) {
-        summary = p.text.replaceAll('\n', ' ').replaceAll(RegExp(' +'), ' ');
-        break;
+    if (paragraphs != null) {
+      for (var p in paragraphs) {
+        if (p.querySelector('span') != null &&
+            p.querySelector('span')!.text.contains("خلاصه داستان")) {
+          summary = p.text.replaceAll('\n', ' ').replaceAll(RegExp(' +'), ' ');
+          break;
+        }
       }
     }
     return summary;
@@ -105,7 +102,7 @@ class Doostiha extends Website {
   }
 
   @override
-  List<String> _findMetadataOpt(Element postEl) {
+  List<String> _findMetadataInCard(Element postEl) {
     var genre = searchMetadataOpt(postEl, "ژانر");
     if (genre.isEmpty) {
       genre = searchMetadataOpt(postEl, "ژانـر");
@@ -120,7 +117,7 @@ class Doostiha extends Website {
   }
 
   @override
-  String _findSummaryOpt(Element postEl) {
+  String _findSummaryInCard(Element postEl) {
     final paragraphs =
         postEl.querySelector("div.textkian0")?.querySelectorAll('p');
     String summary = "";
@@ -137,13 +134,14 @@ class Doostiha extends Website {
   @override
   _findLinks(Document document) {
     final linksElements =
-        document.querySelector('div.textkian0')!.querySelectorAll('a');
+        document.querySelector('div.textkian0')?.querySelectorAll('a');
     final title = document
             .querySelector('h1 > a')
             ?.innerHtml
             .replaceFirst("دانلود", "")
             .trim() ??
         "";
+    if (linksElements == null) return {"": {}};
     if (title.startsWith("سریال") || title.startsWith("فصل")) {
       return _findSerialLinks(linksElements);
     } else {
@@ -229,12 +227,7 @@ class Doostiha extends Website {
   }
 
   Future<List<Post>> search(String q) async {
-    try {
-      final document = await _downloadAndParseDocument("/?s=$q");
-      return parseDocument(document);
-    } catch (e) {
-      List<Post> empty = [];
-      return empty;
-    }
+    final document = await _downloadAndParseDocument("/?s=$q");
+    return parseDocument(document);
   }
 }

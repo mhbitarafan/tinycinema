@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart';
+import 'package:tinycinema/ui/pages/websites/doostiha_list.dart';
 
 class MyNavigator extends ChangeNotifier {
   static final MyNavigator _myNavigator = MyNavigator._internal();
@@ -14,7 +14,6 @@ class MyNavigator extends ChangeNotifier {
     currentRoute = linkTitle;
     notifyListeners();
   }
-  void pop() {
-    
-  }
+
+  void pop() {}
 }

@@ -2,8 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:dio_brotli_transformer/dio_brotli_transformer.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
+import 'package:tinycinema/logic/websites/utils.dart';
 import 'models.dart';
 part 'interface.dart';
+part '_digimovie.dart';
 part '_doostiha.dart';
 part '_uptv.dart';
 
@@ -36,8 +38,8 @@ abstract class Website implements PostParser, SinglePageParser, LinksParser {
         _findTitle(postEl),
         _findSlug(postEl),
         _findImage(postEl),
-        _findSummaryOpt(postEl),
-        _findMetadataOpt(postEl),
+        _findSummaryInCard(postEl),
+        _findMetadataInCard(postEl),
       );
       postList.add(post);
     }

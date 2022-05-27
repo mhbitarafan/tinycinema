@@ -7,7 +7,7 @@ import 'package:tinycinema/config.dart';
 import 'package:tinycinema/logic/favorites.dart';
 import 'package:tinycinema/logic/websites/models.dart';
 import 'package:tinycinema/logic/websites/websites.dart';
-import 'package:tinycinema/ui/pages/video_player.dart';
+import 'package:tinycinema/ui/pages/mpv_player/mpv_player.dart';
 
 class SinglePage extends StatefulWidget {
   const SinglePage(
@@ -194,7 +194,7 @@ List<Widget> createTabsContent(
             onPressed: () async {
               if (Platform.isWindows) {
                 final realUri = (await Dio().head(link)).realUri.toString();
-                Process.run(potPlayerPath, [realUri]);
+                Process.run(mpvPlayerPath, [realUri]);
               } else {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) {

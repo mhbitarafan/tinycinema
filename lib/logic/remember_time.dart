@@ -8,9 +8,13 @@ class RememberTime {
   RememberTime._internal() {
     getTimingFile();
   }
-  Future<File> getTimingFile() async {
-    var appTempDir = await getTemporaryDirectory();
-    return File(appTempDir.path + "/remember_time.json").create();
+  Future<File?> getTimingFile() async {
+    try {
+      var appTempDir = await getTemporaryDirectory();
+      return File(appTempDir.path + "/remember_time.json").create();
+    } catch(err) {
+      return null;
+    }
   }
 
   List<Map<String, dynamic>> rememberTimeList = [];

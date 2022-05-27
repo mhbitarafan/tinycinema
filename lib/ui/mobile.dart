@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tinycinema/config.dart';
-import 'package:tinycinema/ui/pages/doostiha/doostiha_list.dart';
+import 'package:tinycinema/ui/pages/websites/doostiha_list.dart';
 import 'package:tinycinema/ui/styles/theme_manager.dart';
 
 class MobileLayout extends StatefulWidget {
