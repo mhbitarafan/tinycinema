@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tinycinema/logic/websites/websites.dart';
 import 'package:tinycinema/ui/favorites_page.dart';
 import 'package:tinycinema/ui/pages/search_page.dart';
 import 'package:tinycinema/ui/pages/websites/digimovie_list.dart';

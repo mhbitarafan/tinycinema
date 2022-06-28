@@ -1,10 +1,8 @@
-import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tinycinema/config.dart';
 import 'package:tinycinema/global_keys.dart';
 import 'package:tinycinema/ui/website_pageview.dart';
-import 'package:collapsible_sidebar/collapsible_sidebar.dart';
 
 class DesktopLayout extends StatefulWidget {
   @override

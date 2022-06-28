@@ -6,7 +6,6 @@ import 'package:tinycinema/logic/websites/websites.dart';
 import 'package:tinycinema/types.dart';
 import 'package:tinycinema/ui/pages/websites/doostiha_list.dart' as d;
 import 'package:tinycinema/ui/pages/websites/uptv_list.dart' as u;
-import 'package:tinycinema/ui/pages/single_page.dart';
 import 'package:tinycinema/ui/pages/video_card.dart';
 
 Doostiha doostiha = Doostiha();
@@ -25,7 +24,7 @@ class SearchPageState extends State<SearchPage> {
   List<bool> _loading = [false, false, false];
   FocusNode searchInputNode = FocusNode(
     onKey: (node, event) {
-      if(event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         firstSidebarFNode.requestFocus();
         return KeyEventResult.handled;
       }

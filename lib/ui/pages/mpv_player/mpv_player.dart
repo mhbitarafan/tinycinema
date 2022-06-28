@@ -1,7 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -118,38 +115,38 @@ class _MpvPlayerPageState extends State<MpvPlayerPage> {
                   color: Colors.black,
                   child: Stack(
                     children: [
-                      PlatformViewLink(
-                        viewType: "mpvPlayer",
-                        surfaceFactory: (context, controller) {
-                          return AndroidViewSurface(
-                            controller: controller as AndroidViewController,
-                            gestureRecognizers: const <
-                                Factory<OneSequenceGestureRecognizer>>{},
-                            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-                          );
-                        },
-                        onCreatePlatformView: (params) {
-                          return PlatformViewsService.initExpensiveAndroidView(
-                            id: params.id,
-                            viewType: "mpvPlayer",
-                            layoutDirection: TextDirection.ltr,
-                            creationParams: {"url": videoUrl},
-                            creationParamsCodec: const StandardMessageCodec(),
-                            onFocus: () {
-                              params.onFocusChanged(true);
-                            },
-                          )
-                            ..addOnPlatformViewCreatedListener(
-                                params.onPlatformViewCreated)
-                            ..create();
-                        },
-                      ),
-                      // AndroidView(
+                      // PlatformViewLink(
                       //   viewType: "mpvPlayer",
-                      //   layoutDirection: TextDirection.ltr,
-                      //   creationParams: {"url": videoUrl},
-                      //   creationParamsCodec: const StandardMessageCodec(),
+                      //   surfaceFactory: (context, controller) {
+                      //     return AndroidViewSurface(
+                      //       controller: controller as AndroidViewController,
+                      //       gestureRecognizers: const <
+                      //           Factory<OneSequenceGestureRecognizer>>{},
+                      //       hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+                      //     );
+                      //   },
+                      //   onCreatePlatformView: (params) {
+                      //     return PlatformViewsService.initExpensiveAndroidView(
+                      //       id: params.id,
+                      //       viewType: "mpvPlayer",
+                      //       layoutDirection: TextDirection.ltr,
+                      //       creationParams: {"url": videoUrl},
+                      //       creationParamsCodec: const StandardMessageCodec(),
+                      //       onFocus: () {
+                      //         params.onFocusChanged(true);
+                      //       },
+                      //     )
+                      //       ..addOnPlatformViewCreatedListener(
+                      //           params.onPlatformViewCreated)
+                      //       ..create();
+                      //   },
                       // ),
+                      AndroidView(
+                        viewType: "mpvPlayer",
+                        layoutDirection: TextDirection.ltr,
+                        creationParams: {"url": videoUrl},
+                        creationParamsCodec: const StandardMessageCodec(),
+                      ),
                       // url of video on top left
                       Consumer<PlayerState>(
                         builder: (context, a, b) => Visibility(
