@@ -7,16 +7,26 @@ class WebsiteCtl extends ChangeNotifier {
   String currentRoute;
   var canLoadMore = true;
   var currentPage = 1;
+  bool _disposed = false;
+  bool error = false;
   List<Post> postList = [];
 
   WebsiteCtl(this._website, this.currentRoute);
+
   Future<void> getPage() async {
     canLoadMore = false;
-    var _newList = await _website.parsePage(currentRoute, currentPage);
-    postList.addAll(_newList);
-    currentPage++;
-    canLoadMore = true;
-    notifyListeners();
+    try {
+      error = false;
+      var _newList = await _website.parseHtmlPage(currentRoute, currentPage);
+      postList.addAll(_newList);
+      currentPage++;
+      canLoadMore = true;
+      if (!_disposed) {
+        notifyListeners();
+      }
+    } catch (e) {
+      error = true;
+    }
   }
 
   Future<void> navigate(String route) async {
@@ -29,6 +39,14 @@ class WebsiteCtl extends ChangeNotifier {
     canLoadMore = true;
     currentPage = 1;
     postList = [];
-    notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

@@ -4,15 +4,18 @@ import 'package:path_provider/path_provider.dart';
 
 class RememberTime {
   static final RememberTime _myFavorite = RememberTime._internal();
+
   factory RememberTime() => _myFavorite;
+
   RememberTime._internal() {
     getTimingFile();
   }
+
   Future<File?> getTimingFile() async {
     try {
       var appTempDir = await getTemporaryDirectory();
       return File(appTempDir.path + "/remember_time.json").create();
-    } catch(err) {
+    } catch (err) {
       return null;
     }
   }
@@ -39,12 +42,12 @@ class RememberTime {
     }
   }
 
-  Duration getVideoRememberedTime(String videoUrl) {
+  Duration? getVideoRememberedTime(String videoUrl) {
     for (var a in rememberTimeList) {
       if (a["slug"] == videoUrl) {
         return a["time"] as Duration;
       }
     }
-    return Duration(seconds: 0);
+    return null;
   }
 }

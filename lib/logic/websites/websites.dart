@@ -3,10 +3,15 @@ import 'package:dio_brotli_transformer/dio_brotli_transformer.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:tinycinema/logic/websites/utils.dart';
+import 'package:tinycinema/types.dart';
 import 'models.dart';
+
 part 'interface.dart';
+
 part '_digimovie.dart';
+
 part '_doostiha.dart';
+
 part '_uptv.dart';
 
 const noImage = 'https://via.placeholder.com/200';
@@ -15,9 +20,10 @@ abstract class Website implements PostParser, SinglePageParser, LinksParser {
   final String _baseUrl;
   final String _pagePath;
   final String _postSelector;
-  final String key;
+  final WebsiteType key;
   late final Map<String, String> categories;
   final _httpClient = Dio();
+
   Website(this._baseUrl, this._postSelector, this.key,
       [this._pagePath = "/page/"]) {
     _httpClient.transformer = DioBrotliTransformer();
@@ -35,18 +41,19 @@ abstract class Website implements PostParser, SinglePageParser, LinksParser {
     final allPosts = document.querySelectorAll(_postSelector);
     for (var postEl in allPosts) {
       var post = Post(
-        _findTitle(postEl),
+        _findTitle(postEl).trim(),
         _findSlug(postEl),
         _findImage(postEl),
-        _findSummaryInCard(postEl),
-        _findMetadataInCard(postEl),
+        key,
+        summary: _findSummaryInCard(postEl),
+        meta: _findMetadataInCard(postEl),
       );
       postList.add(post);
     }
     return postList;
   }
 
-  Future<List<Post>> parsePage(String _path, int page) async {
+  Future<List<Post>> parseHtmlPage(String _path, int page) async {
     final document =
         await _downloadAndParseDocument(_path + _pagePath + page.toString());
     return parseDocument(document);
@@ -56,7 +63,8 @@ abstract class Website implements PostParser, SinglePageParser, LinksParser {
     final document = await _downloadAndParseDocument(_path);
     final summary = _findSummary(document);
     final meta = _findMetadata(document);
-    final links = _findLinks(document);
-    return SinglePageModel(document, summary, meta, links);
+    final trailer = _findTrailer(document);
+    final links = Links(_findLinks(document));
+    return SinglePageModel(document, summary, meta, trailer, links);
   }
 }

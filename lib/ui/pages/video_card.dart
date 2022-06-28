@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tinycinema/config.dart';
-import 'package:tinycinema/controller/video_info_state.dart';
+import 'package:tinycinema/types.dart';
 import 'package:tinycinema/ui/helpers/color_utils.dart';
+import 'package:tinycinema/ui/pages/single_page.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class VideoCard extends StatefulWidget {
@@ -10,26 +11,35 @@ class VideoCard extends StatefulWidget {
     required this.image,
     required this.title,
     required this.imageHeight,
+    required this.slug,
     this.imageWidth = double.infinity,
-    required this.onTap,
     this.summary,
     this.meta,
+    this.websiteType,
+    this.websiteKey,
   }) : super(key: key);
 
-  final String image;
+  final String image, title, slug;
   final double imageHeight;
   final double imageWidth;
-  final String title;
-  final String? summary;
+  final String? summary, websiteKey;
   final List<String>? meta;
-  final void Function() onTap;
+  final WebsiteType? websiteType;
+
   @override
   VideoCardState createState() => VideoCardState();
 }
 
 class VideoCardState extends State<VideoCard> {
   late Color cardColor;
-  double cardScale = 1;
+  bool hasFocus = false;
+
+  onFocusChanged(_hasFocus) {
+    setState(() {
+      hasFocus = _hasFocus;
+    });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -38,53 +48,54 @@ class VideoCardState extends State<VideoCard> {
 
   @override
   Widget build(BuildContext context) {
+    Color borderColor() {
+      if (!hasFocus) return Colors.transparent;
+      return Theme.of(context).brightness == Brightness.dark
+          ? Colors.white
+          : Colors.grey[700]!;
+    }
+
     return InkWell(
       focusColor: Colors.transparent,
-      onTap: widget.onTap,
-      onFocusChange: (hasFocus) {
-        setState(() {
-          if (hasFocus) {
-            videoSummary.value = widget.summary ?? "";
-            videoMeta.value = widget.meta?.join("\n") ?? "";
-            setState(() {
-              cardColor = darken(cardColor, .1);
-            });
-          } else {
-            videoSummary.value = "";
-            videoMeta.value = "";
-            setState(() {
-              cardColor = Theme.of(context).cardColor;
-            });
-          }
-        });
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          "/singlepage",
+          arguments: SinglePageArgs(
+              widget.title, widget.image, widget.slug, widget.websiteType!),
+        );
       },
-      child: Stack(
-        children: [
-          Card(
-            color: cardColor,
-            child: Column(
-              children: [
-                FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: widget.image,
-                  fit: BoxFit.cover,
-                  height: widget.imageHeight,
-                  width: widget.imageWidth,
-                  alignment: Alignment.topCenter,
-                ),
-                Container(
-                  margin: EdgeInsets.all(8),
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    widget.title,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                ),
-              ],
+      onFocusChange: onFocusChanged,
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+              width: 1.5,
+              color: borderColor(),
             ),
+            borderRadius: BorderRadius.circular(5)),
+        child: Card(
+          color: hasFocus ? darken(cardColor, .1) : cardColor,
+          child: Column(
+            children: [
+              FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image: widget.image,
+                fit: BoxFit.cover,
+                height: widget.imageHeight,
+                width: widget.imageWidth,
+                alignment: Alignment.topCenter,
+              ),
+              Container(
+                margin: EdgeInsets.all(7),
+                alignment: Alignment.topCenter,
+                child: Text(
+                  widget.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

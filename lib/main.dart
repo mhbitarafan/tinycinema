@@ -1,21 +1,35 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
-import 'package:provider/provider.dart';
 import 'package:tinycinema/config.dart';
-import 'package:tinycinema/logic/favorites.dart';
+import 'package:tinycinema/global_keys.dart';
+import 'package:tinycinema/ui/helpers/color_utils.dart';
 import 'package:tinycinema/ui/layout_builder.dart';
-import 'package:tinycinema/ui/pages/websites/doostiha_list.dart';
-import 'package:tinycinema/ui/styles/theme_manager.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tinycinema/ui/pages/single_page.dart';
+
+void initLogger() {
+  if (kReleaseMode) {
+    Logger.root.level = Level.OFF;
+  } else {
+    Logger.root.level = Level.ALL; // defaults to Level.INFO
+    Logger.root.onRecord.listen((record) {
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    });
+  }
+}
 
 void main() async {
-  Logger.root.level = Level.ALL; // defaults to Level.INFO
-  Logger.root.onRecord.listen((record) {
-    print('${record.level.name}: ${record.time}: ${record.message}');
-  });
-  MyFavorite();
+  WidgetsFlutterBinding.ensureInitialized();
+  await initServices();
   runApp(MyApp());
+}
+
+Future<void> initServices() async {
+  await Hive.initFlutter();
+  await Hive.openBox('favorites');
 }
 
 class MyApp extends StatelessWidget {
@@ -23,28 +37,50 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyThemeManager(),
-      child: Consumer<MyThemeManager>(
-        builder: (context, myThemeManager, child) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: appTitle,
-          home: SafeArea(
-            child: MyLayoutBuilder(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      navigatorObservers: [routeObserver],
+      title: appTitle,
+      theme: ThemeData(
+        fontFamily: 'irsans',
+        brightness: Brightness.dark,
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(Colors.black87),
+            overlayColor: MaterialStateColor.resolveWith(
+              (states) => lighten(Colors.deepPurple),
+            ),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+            ),
           ),
-          theme: myThemeManager.currentTheme.themeData,
-          localizationsDelegates: [
-            GlobalCupertinoLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          supportedLocales: [
-            Locale("fa", "IR"),
-          ],
-          locale: Locale("fa", "IR"),
-          scrollBehavior: MyCustomScrollBehavior(),
-          routes: {"/doostiha": (context) => DoostihaPage()},
         ),
+        primaryColor: Colors.deepPurple[400],
+        colorScheme:
+            ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple).copyWith(
+          secondary: Colors.amber[500],
+          brightness: Brightness.dark,
+          primary: Colors.deepPurple[600],
+        ),
+      ),
+      localizationsDelegates: [
+        GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale("fa", "IR"),
+      ],
+      locale: Locale("fa", "IR"),
+      scrollBehavior: MyCustomScrollBehavior(),
+      initialRoute: "/",
+      routes: {
+        "/singlepage": (context) => SinglePage(),
+      },
+      home: SafeArea(
+        child: MyLayoutBuilder(),
       ),
     );
   }

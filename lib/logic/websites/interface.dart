@@ -11,8 +11,9 @@ abstract class PostParser {
 abstract class SinglePageParser {
   List<String> _findMetadata(Document document);
   String _findSummary(Document document);
+  String _findTrailer(Document document);
 }
 
 abstract class LinksParser {
-  Map<String, dynamic> _findLinks(Document document);
+  List<Link>? _findLinks(Document document);
 }

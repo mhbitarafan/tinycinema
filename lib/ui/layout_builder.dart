@@ -16,7 +16,7 @@ class MyLayoutBuilder extends StatelessWidget {
         layout = MobileLayout();
         break;
       case deviceTypes.tv:
-        layout = TvLayout();
+        layout = DesktopLayout();
         break;
       case deviceTypes.desktop:
         layout = DesktopLayout();

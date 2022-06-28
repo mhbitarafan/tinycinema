@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:tinycinema/config.dart';
-import 'package:tinycinema/ui/pages/websites/doostiha_list.dart';
-import 'package:tinycinema/ui/styles/theme_manager.dart';
+import 'package:tinycinema/ui/website_pageview.dart';
 
 class MobileLayout extends StatefulWidget {
   @override
@@ -12,11 +10,11 @@ class MobileLayout extends StatefulWidget {
 
 class MobileLayoutState extends State<MobileLayout> {
   int _bottomNavCurrentIndex = 0;
-  Widget mainArea = DoostihaPage();
   List<BottomNavigationBarItem> menuItems = [];
+
   void _onBottomNavItemTapped(int index) {
     _bottomNavCurrentIndex = index;
-    mainArea = menu[index]["page"];
+    page.jumpToPage(index);
     setState(() {});
   }
 
@@ -48,11 +46,14 @@ class MobileLayoutState extends State<MobileLayout> {
         shortcuts: <LogicalKeySet, Intent>{
           LogicalKeySet(LogicalKeyboardKey.select): const ActivateIntent(),
         },
-        child: Consumer<MyThemeManager>(
-          builder: (context, myThemeManager, child) => Container(
-            color: myThemeManager.currentTheme.bodyBg,
-            child: mainArea,
-          ),
+        child: PageView(
+          controller: page,
+          children: pageViewChildren,
+          onPageChanged: (p) {
+            setState(() {
+              _bottomNavCurrentIndex = p;
+            });
+          },
         ),
       ),
     );

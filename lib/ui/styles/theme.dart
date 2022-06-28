@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tinycinema/ui/helpers/color_utils.dart';
 
+Color bodyBg = Colors.grey[900]!;
+Color sidebarBg = Colors.black;
+Color sidebarLinkColor = Colors.white;
+
 abstract class MyTheme {
   late ThemeData themeData;
   Color bodyBg = Colors.black12;
@@ -29,7 +33,10 @@ abstract class MyTheme {
       ),
       primaryColor: Colors.deepPurple[400],
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple)
-          .copyWith(secondary: Colors.amber[600], brightness: brightness, primary: Colors.deepPurple),
+          .copyWith(
+              secondary: Colors.amber[600],
+              brightness: brightness,
+              primary: Colors.deepPurple),
     );
   }
 }

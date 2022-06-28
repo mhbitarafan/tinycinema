@@ -89,4 +89,4 @@ app.*.map.json
 
 web/
 windows/
-android/
+**jniLibs**

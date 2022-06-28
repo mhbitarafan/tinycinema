@@ -1,54 +1,70 @@
 import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tinycinema/config.dart';
 import 'package:tinycinema/logic/favorites.dart';
 import 'package:tinycinema/logic/websites/models.dart';
 import 'package:tinycinema/logic/websites/websites.dart';
+import 'package:tinycinema/types.dart';
 import 'package:tinycinema/ui/pages/mpv_player/mpv_player.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class SinglePage extends StatefulWidget {
-  const SinglePage(
-      {Key? key,
-      required this.title,
-      required this.slug,
-      required this.image,
-      required this.website})
-      : super(key: key);
+class SinglePageArgs {
   final String title;
   final String slug;
   final String image;
-  final Website website;
+  final WebsiteType websiteType;
+
+  SinglePageArgs(this.title, this.image, this.slug, this.websiteType);
+}
+
+class SinglePage extends StatefulWidget {
+  const SinglePage({
+    Key? key,
+  }) : super(key: key);
+
   @override
   SinglePageState createState() => SinglePageState();
 }
 
 class SinglePageState extends State<SinglePage> with TickerProviderStateMixin {
-  MyFavorite myFavorite = MyFavorite();
   late SinglePageModel _singlePage;
   late TabController _tabController;
   late Post post;
   bool _loading = true;
+  late SinglePageArgs args;
+  late Website website;
+
   @override
   void initState() {
-    post = Post(widget.title, widget.slug, widget.image);
-    widget.website.parseSinglePage(widget.slug).then((value) {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    args = ModalRoute.of(context)!.settings.arguments as SinglePageArgs;
+    website = websitesMapping[args.websiteType]!;
+    post = Post(args.title, args.slug, args.image, args.websiteType);
+    website.parseSinglePage(args.slug).then((value) {
       _singlePage = value;
-      _tabController =
-          TabController(length: _singlePage.links.length, vsync: this);
+      _tabController = TabController(
+          length: _singlePage.links?.groups?.length ?? 0, vsync: this);
       _loading = false;
       setState(() {});
     });
-    super.initState();
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(args.title),
       ),
       body: Shortcuts(
         shortcuts: <LogicalKeySet, Intent>{
@@ -68,9 +84,14 @@ class SinglePageState extends State<SinglePage> with TickerProviderStateMixin {
                             runSpacing: 10,
                             spacing: 10,
                             children: [
-                              Container(
-                                constraints: BoxConstraints(maxWidth: 250),
-                                child: Image.network(widget.image),
+                              InkWell(
+                                onTap: () {
+                                  launchUrl(Uri.parse(args.slug));
+                                },
+                                child: Container(
+                                  constraints: BoxConstraints(maxWidth: 250),
+                                  child: Image.network(args.image),
+                                ),
                               ),
                               Container(
                                 width: 600,
@@ -94,27 +115,57 @@ class SinglePageState extends State<SinglePage> with TickerProviderStateMixin {
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    myFavorite.isFavorite(
-                                            post.toJson(), widget.website.key)
-                                        ? ElevatedButton(
-                                            onPressed: () {
-                                              myFavorite.removeFavorite(
-                                                  post.toJson(),
-                                                  widget.website.key);
-                                              setState(() {});
-                                            },
-                                            child: Text("حذف از لیست"),
-                                          )
-                                        : ElevatedButton(
-                                            autofocus: true,
-                                            onPressed: () {
-                                              myFavorite.addFavorite(
-                                                  post.toJson(),
-                                                  widget.website.key);
-                                              setState(() {});
-                                            },
-                                            child: Text("افزودن به لیست"),
-                                          ),
+                                    Row(
+                                      children: [
+                                        myFavorite.isFavorite(post)
+                                            ? ElevatedButton(
+                                                onPressed: () {
+                                                  myFavorite
+                                                      .removeFavorite(post);
+                                                  setState(() {});
+                                                },
+                                                child: Text("حذف از لیست"),
+                                              )
+                                            : ElevatedButton(
+                                                autofocus: true,
+                                                onPressed: () {
+                                                  myFavorite.addFavorite(post);
+                                                  setState(() {});
+                                                },
+                                                child: Text("افزودن به لیست"),
+                                              ),
+                                        SizedBox(
+                                          width: 12,
+                                        ),
+                                        _singlePage.trailer.isNotEmpty
+                                            ? ElevatedButton(
+                                                child: Text("تریلر"),
+                                                onPressed: () async {
+                                                  if (Platform.isWindows) {
+                                                    Process.run(mpvPlayerPath,
+                                                        [_singlePage.trailer]);
+                                                  } else {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) {
+                                                          return MpvPlayerPage(
+                                                              url: _singlePage
+                                                                  .trailer);
+                                                        },
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                onLongPress: () {
+                                                  Clipboard.setData(
+                                                      ClipboardData(
+                                                          text: _singlePage
+                                                              .trailer));
+                                                },
+                                              )
+                                            : Container(),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               )
@@ -161,60 +212,69 @@ class SinglePageState extends State<SinglePage> with TickerProviderStateMixin {
   }
 }
 
-List<Widget> createTabs(Map<String, dynamic> links) {
+List<Widget> createTabs(Links? link_data) {
   List<Widget> _tabs = [];
-  links.forEach((key, _) {
+  if (link_data == null) return _tabs;
+  for (var group_title in link_data.groups!) {
     _tabs.add(Tab(
-      text: key,
+      text: group_title,
     ));
-  });
+  }
   return _tabs;
 }
 
-List<Widget> createTabsContent(
-    Map<String, dynamic> links, BuildContext context) {
+List<Widget> createTabsContent(Links? link_data, BuildContext context) {
+  if (link_data == null) return [Text("پولی")];
   List<Widget> _tabsContent = [];
-
-  links.forEach((_, tab) {
-    final linkColumn = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [],
-    );
-    tab.forEach((groupKey, row) {
-      final linkRow = Wrap(
-        runSpacing: 10,
-        spacing: 10,
-        children: [Text(groupKey)],
-      );
-      row.forEach((linkTitle, link) {
-        linkRow.children.add(Tooltip(
-          message: link,
-          child: ElevatedButton(
-            child: Text(linkTitle),
-            onPressed: () async {
-              if (Platform.isWindows) {
-                final realUri = (await Dio().head(link)).realUri.toString();
-                Process.run(mpvPlayerPath, [realUri]);
-              } else {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) {
-                    return MyVideoPlayer(url: link);
-                  },
-                ));
-              }
-            },
-            onLongPress: () {
-              Clipboard.setData(ClipboardData(text: link));
-            },
-          ),
-        ));
-      });
-      linkColumn.children.add(linkRow);
-      linkColumn.children.add(SizedBox(height: 10));
-    });
+  for (var group in link_data.groups!) {
+    final groupLinks = link_data.linksOfGroup(group)!;
+    final linksColumn = createTabContent(Links(groupLinks), context);
     _tabsContent.add(SingleChildScrollView(
-      child: linkColumn,
+      child: linksColumn,
     ));
-  });
+  }
   return _tabsContent;
+}
+
+Widget createTabContent(Links links_data, BuildContext context) {
+  final linksColumn = Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [],
+  );
+  for (var row in links_data.rows!) {
+    final linkRow = Wrap(
+      runSpacing: 10,
+      spacing: 10,
+      children: [Text(row)],
+    );
+    for (var row_link in links_data.linksOfRow(row)!) {
+      linkRow.children.add(Tooltip(
+        message: row_link.href,
+        child: ElevatedButton(
+          child: Text(row_link.quality),
+          onPressed: () async {
+            if (Platform.isWindows) {
+              Process.run(mpvPlayerPath, [row_link.href]);
+            } else {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return MpvPlayerPage(
+                        url: row_link.href, links_data: links_data);
+                  },
+                ),
+              );
+            }
+          },
+          onLongPress: () {
+            Clipboard.setData(ClipboardData(text: row_link.href));
+          },
+        ),
+      ));
+    }
+    linksColumn.children.add(linkRow);
+    linksColumn.children.add(SizedBox(height: 10));
+  }
+  return linksColumn;
 }

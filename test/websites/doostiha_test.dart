@@ -10,7 +10,7 @@ void main() async {
     late List<Post> page1cat0;
     setUp(() async {
       page1cat0 =
-          await doostiha.parsePage(doostiha.categories["فیلم"]!, 1);
+          await doostiha.parseHtmlPage(doostiha.categories["فیلم"]!, 1);
     });
     test("testing doostiha category parser", () async {
       expect(page1cat0.length, 10);

@@ -41,7 +41,10 @@ String searchMetadata(Document el, String metaTitle,
 }
 
 class Doostiha extends Website {
-  Doostiha() : super("https://www.doostihaa.com", "article.postsd", "doostiha");
+  Doostiha()
+      : super("https://www.doostihaa.com", "article.postsd",
+            WebsiteType.doostiha);
+
   @override
   String _findTitle(Element post) {
     return cleanTitle(post.querySelector('h2 > a')?.innerHtml ?? "");
@@ -141,7 +144,7 @@ class Doostiha extends Website {
             .replaceFirst("دانلود", "")
             .trim() ??
         "";
-    if (linksElements == null) return {"": {}};
+    if (linksElements == null) return [];
     if (title.startsWith("سریال") || title.startsWith("فصل")) {
       return _findSerialLinks(linksElements);
     } else {
@@ -149,8 +152,8 @@ class Doostiha extends Website {
     }
   }
 
-  _findSerialLinks(List<Element> linksElements) {
-    Map<String, dynamic> links = {};
+  List<Link>? _findSerialLinks(List<Element> linksElements) {
+    List<Link> links = [];
     var seasonTitle = "";
     var episodeTitle = "";
     for (var linkEl in linksElements) {
@@ -172,10 +175,6 @@ class Doostiha extends Website {
         linkTitle = ["720", "1080", "480"]
             .firstWhere((element) => filename.contains(element));
       }
-      if (links[seasonTitle] == null) {
-        links[seasonTitle] = {};
-      }
-
       if (linkTitle.startsWith("قسمت")) {
         episodeTitle =
             RegExp(r"قسمت .*?\s").firstMatch(linkTitle)?.group(0) ?? "";
@@ -187,16 +186,19 @@ class Doostiha extends Website {
         linkTitle = linkTitle.replaceFirst("نسخه", "").trim();
       }
 
-      if (links[seasonTitle][episodeTitle] == null) {
-        links[seasonTitle][episodeTitle] = {};
-      }
-      links[seasonTitle][episodeTitle][linkTitle] = href;
+      links.add(
+        Link(
+            group: seasonTitle,
+            row: episodeTitle,
+            quality: linkTitle,
+            href: href),
+      );
     }
     return links;
   }
 
-  _findMovieLinks(List<Element> linksElements) {
-    Map<String, dynamic> links = {};
+  List<Link>? _findMovieLinks(List<Element> linksElements) {
+    List<Link> links = [];
     var rowTitle = "";
     for (var linkEl in linksElements) {
       final href = linkEl.attributes["href"]?.replaceFirst("?ref=3m8", "");
@@ -215,13 +217,10 @@ class Doostiha extends Website {
       }
       final groupTitle =
           filename.contains(".Dubbed") ? "دوبله فارسی" : "زیرنویس فارسی";
-      if (links[groupTitle] == null) {
-        links[groupTitle] = {};
-      }
-      if (links[groupTitle][rowTitle] == null) {
-        links[groupTitle][rowTitle] = {};
-      }
-      links[groupTitle][rowTitle][linkTitle] = href;
+
+      links.add(
+        Link(group: groupTitle, row: rowTitle, quality: linkTitle, href: href),
+      );
     }
     return links;
   }
@@ -229,5 +228,19 @@ class Doostiha extends Website {
   Future<List<Post>> search(String q) async {
     final document = await _downloadAndParseDocument("/?s=$q");
     return parseDocument(document);
+  }
+
+  @override
+  String _findTrailer(Document document) {
+    RegExp exp = RegExp(r"<iframe src='(.*?)'");
+    if (document.body != null) {
+      Iterable<RegExpMatch> matches = exp.allMatches(document.body!.text);
+      try {
+        return matches.first.group(1) ?? "";
+      } catch (e) {
+        return "";
+      }
+    }
+    return "";
   }
 }

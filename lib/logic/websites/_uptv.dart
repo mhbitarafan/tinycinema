@@ -1,7 +1,8 @@
 part of 'websites.dart';
 
 class Uptv extends Website {
-  Uptv() : super("https://www.uptvs.com", "article", "uptv");
+  Uptv() : super("https://www.uptvs.com", "article", WebsiteType.uptv);
+
   @override
   String _findTitle(Element post) {
     return post
@@ -63,15 +64,14 @@ class Uptv extends Website {
     }
   }
 
-  _findSerialLinks(Document document) {
-    Map<String, dynamic> links = {};
+  List<Link>? _findSerialLinks(Document document) {
+    List<Link> links = [];
     var seasonTitlesElements = document
         .querySelectorAll("div.new-tab-holder.position-relative > div > a");
     var seasonBoxes = document.querySelectorAll(".new-tab-content");
 
     for (int i = 0; i < seasonTitlesElements.length; i++) {
       final seasonTitle = seasonTitlesElements[i].text.trim();
-      links[seasonTitle] = {};
       var episodeBoxes =
           seasonBoxes[i].querySelectorAll(".post-content-download-item > div");
       for (var episodeBox in episodeBoxes) {
@@ -81,9 +81,6 @@ class Uptv extends Website {
                 .trim()
                 .replaceAll(RegExp(r'\s+'), ' ') ??
             "";
-        if (links[seasonTitle][episodeTitle] == null) {
-          links[seasonTitle][episodeTitle] = {};
-        }
         List<Element> linkElements = episodeBox.querySelectorAll("div > a");
         for (var linkEl in linkElements) {
           final href = linkEl.attributes["href"]?.replaceFirst("?ref=7xk", "");
@@ -101,23 +98,23 @@ class Uptv extends Website {
             linkTitle = ["720", "1080", "480"]
                 .firstWhere((element) => filename.contains(element));
           }
-
-          links[seasonTitle][episodeTitle][linkTitle] = href;
+          links.add(Link(
+              href: href,
+              row: episodeTitle,
+              group: seasonTitle,
+              quality: linkTitle));
         }
       }
     }
     return links;
   }
 
-  _findMovieLinks(Document document) {
+  List<Link>? _findMovieLinks(Document document) {
     final linkBoxesEl =
         document.querySelectorAll('.post-content-download-box > div');
-    Map<String, dynamic> links = {};
+    List<Link> links = [];
     for (var linkBoxEl in linkBoxesEl) {
       var groupTitle = linkBoxEl.querySelector(".badge")?.text.trim() ?? "";
-      if (links[groupTitle] == null) {
-        links[groupTitle] = {};
-      }
       List<Element> linkElements =
           linkBoxEl.querySelectorAll("div:last-child > a");
       for (var linkEl in linkElements) {
@@ -132,15 +129,12 @@ class Uptv extends Website {
         final ext = href.substring(href.length - 3);
         if (!["mkv", "mp4"].contains(ext)) continue;
         final filename = href.split("/").last;
-        if (links[groupTitle][""] == null) {
-          links[groupTitle][""] = {};
-        }
         if (linkTitle == "") {
           linkTitle = ["720", "1080", "480"]
               .firstWhere((element) => filename.contains(element));
         }
-
-        links[groupTitle][""][linkTitle] = href;
+        links.add(
+            Link(href: href, row: "", group: groupTitle, quality: linkTitle));
       }
     }
     return links;
@@ -160,9 +154,13 @@ class Uptv extends Website {
     releaseDate =
         metaElements[0].querySelector(".text-gray-2")?.text.trim() ?? "";
     country = metaElements[1].querySelector(".text-gray-2")?.text.trim() ?? "";
-    imdbRating =
-        metaElements[2].querySelector(".text-gray-2")?.text.trim() ?? "N/A";
 
+    try {
+      imdbRating =
+          metaElements[2].querySelector(".text-gray-2")?.text.trim() ?? "N/A";
+    } catch (e) {
+      imdbRating = "N/A";
+    }
     List<String> meta = [
       [genre, releaseDate, country, imdbRating].join(" | ")
     ];
@@ -183,5 +181,10 @@ class Uptv extends Website {
   Future<List<Post>> search(String q) async {
     final document = await _downloadAndParseDocument("/?s=$q");
     return parseDocument(document);
+  }
+
+  @override
+  String _findTrailer(Document document) {
+    return document.querySelector("source")?.attributes["src"] ?? "";
   }
 }

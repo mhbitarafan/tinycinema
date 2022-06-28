@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tinycinema/ui/favorites.dart';
+import 'package:tinycinema/logic/websites/websites.dart';
+import 'package:tinycinema/ui/favorites_page.dart';
+import 'package:tinycinema/ui/pages/search_page.dart';
 import 'package:tinycinema/ui/pages/websites/digimovie_list.dart';
 import 'package:tinycinema/ui/pages/websites/doostiha_list.dart';
-import 'package:tinycinema/ui/pages/search_page.dart';
 import 'package:tinycinema/ui/pages/websites/uptv_list.dart';
 
 final appTitle = "تاینی سینما";
@@ -21,28 +22,33 @@ final cardWidth = 250.0;
 
 final List<Map<String, dynamic>> menu = [
   {
+    "title": "دیجی مووی",
+    "route": "/digimoviez",
+    "widget": DigimoviePage(),
+    "icon": Icons.movie,
+  },
+  {
     "title": "دوستی ها",
-    "page": DoostihaPage(),
+    "route": "/doostiha",
+    "widget": DoostihaPage(),
     "icon": Icons.movie,
   },
   {
     "title": "آپ تیوی",
-    "page": UptvPage(),
-    "icon": Icons.movie,
-  },
-  {
-    "title": "دیجی مووی",
-    "page": DigimoviePage(),
+    "route": "/uptv",
+    "widget": UptvPage(),
     "icon": Icons.movie,
   },
   {
     "title": "جستجو",
-    "page": SearchPage(),
-    "icon": Icons.tv,
+    "route": "/search",
+    "widget": SearchPage(),
+    "icon": Icons.search,
   },
   {
     "title": "لیست تماشا",
-    "page": MyFavoritesPage(),
-    "icon": Icons.list,
+    "route": "/favorites",
+    "widget": MyFavoritesPage(),
+    "icon": Icons.menu,
   }
 ];
